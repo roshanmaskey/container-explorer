@@ -1,0 +1,392 @@
+disks:
+- path: /data/disks/d1.raw
+  mount_point: /mnt/d1
+  mnt_base: /tmp/mnt/d1
+  export_base: /tmp/export/d1
+  containers:
+  - id: 3062389c72cd1485dd7caa96bf5877623665f00e74d72c15cf35876af850a2cd
+    checks:
+      Namespace: ''
+  - id: containerd_drift
+    checks:
+      Namespace: default
+  drifts:
+  - container_id: 3062389c72cd1485dd7caa96bf5877623665f00e74d72c15cf35876af850a2cd
+    added_or_modified_count: 3
+    inaccessible_count: 1
+    added_or_modified:
+    - /malware.conf
+    - /root/.bash_history
+    - /root/malware.bin
+    inaccessible:
+    - /var/log/btmp
+  - container_id: containerd_drift
+    added_or_modified_count: 2
+    inaccessible_count: 1
+    added_or_modified:
+    - /etc/nginx/conf.d/default.conf
+    - /root/malware.bin
+    inaccessible:
+    - /var/log/btmp
+  mounts:
+  - path: /tmp/mnt/d1/3062389c72cd1485dd7caa96bf5877623665f00e74d72c15cf35876af850a2cd
+  - path: /tmp/mnt/d1/containerd_drift
+  exports:
+  - path: /tmp/export/d1/3062389c72cd1485dd7caa96bf5877623665f00e74d72c15cf35876af850a2cd.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d1/3062389c72cd1485dd7caa96bf5877623665f00e74d72c15cf35876af850a2cd.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d1/containerd_drift.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d1/containerd_drift.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+- path: /data/disks/d2.raw
+  mount_point: /mnt/d2
+  mnt_base: /tmp/mnt/d2
+  export_base: /tmp/export/d2
+  containers:
+  - id: 577aa8b1619b8007f68eda358902f0e0ae516ba3ddab46403fbc5a5e757ed750
+    checks:
+      Namespace: ''
+  - id: 6ceb6889284366fea95ae4b980449c2d4ffaeea735692705d5aa0f67baea2553
+    checks:
+      Namespace: ''
+  - id: eb73e4a784a638700c8b3890d735735269d25a9de1e37561b633725b7e5d5849
+    checks:
+      Namespace: ''
+  - id: eb5656bba0c0a393e2cf6827c939b59736a3c2fe652d0ee3475f81073315157a
+    checks:
+      Namespace: ''
+  - id: 2b5b0fe962cb044cfc842c58fad4ac61c512dbbcd9b749ff1ac8b3bbcef598a3
+    checks:
+      Namespace: ''
+  - id: containerd-fedora
+    checks:
+      Namespace: default
+  - id: containerd-redis
+    checks:
+      Namespace: default
+  drifts:
+  - container_id: 577aa8b1619b8007f68eda358902f0e0ae516ba3ddab46403fbc5a5e757ed750
+    added_or_modified_count: 0
+    inaccessible_count: 0
+  - container_id: 6ceb6889284366fea95ae4b980449c2d4ffaeea735692705d5aa0f67baea2553
+    added_or_modified_count: 2
+    inaccessible_count: 0
+    added_or_modified:
+    - /etc/nginx/conf.d/default.conf
+    - /run/nginx.pid
+  - container_id: eb73e4a784a638700c8b3890d735735269d25a9de1e37561b633725b7e5d5849
+    added_or_modified_count: 2
+    inaccessible_count: 0
+    added_or_modified:
+    - /etc/mtab
+    - /run/.containerenv
+  - container_id: eb5656bba0c0a393e2cf6827c939b59736a3c2fe652d0ee3475f81073315157a
+    added_or_modified_count: 3
+    inaccessible_count: 0
+    added_or_modified:
+    - /etc/hosts
+    - /etc/mtab
+    - /run/.containerenv
+  - container_id: 2b5b0fe962cb044cfc842c58fad4ac61c512dbbcd9b749ff1ac8b3bbcef598a3
+    added_or_modified_count: 3
+    inaccessible_count: 0
+    added_or_modified:
+    - /etc/hostname
+    - /etc/resolv.conf
+    - /run/.containerenv
+  - container_id: containerd-fedora
+    added_or_modified_count: 0
+    inaccessible_count: 0
+  - container_id: containerd-redis
+    added_or_modified_count: 0
+    inaccessible_count: 0
+  mounts:
+  - path: /tmp/mnt/d2/577aa8b1619b8007f68eda358902f0e0ae516ba3ddab46403fbc5a5e757ed750
+  - path: /tmp/mnt/d2/6ceb6889284366fea95ae4b980449c2d4ffaeea735692705d5aa0f67baea2553
+  - path: /tmp/mnt/d2/eb73e4a784a638700c8b3890d735735269d25a9de1e37561b633725b7e5d5849
+  - path: /tmp/mnt/d2/eb5656bba0c0a393e2cf6827c939b59736a3c2fe652d0ee3475f81073315157a
+  - path: /tmp/mnt/d2/2b5b0fe962cb044cfc842c58fad4ac61c512dbbcd9b749ff1ac8b3bbcef598a3
+  - path: /tmp/mnt/d2/containerd-fedora
+  - path: /tmp/mnt/d2/containerd-redis
+  exports:
+  - path: /tmp/export/d2/577aa8b1619b8007f68eda358902f0e0ae516ba3ddab46403fbc5a5e757ed750.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d2/577aa8b1619b8007f68eda358902f0e0ae516ba3ddab46403fbc5a5e757ed750.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d2/6ceb6889284366fea95ae4b980449c2d4ffaeea735692705d5aa0f67baea2553.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d2/6ceb6889284366fea95ae4b980449c2d4ffaeea735692705d5aa0f67baea2553.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d2/eb73e4a784a638700c8b3890d735735269d25a9de1e37561b633725b7e5d5849.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d2/eb73e4a784a638700c8b3890d735735269d25a9de1e37561b633725b7e5d5849.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d2/eb5656bba0c0a393e2cf6827c939b59736a3c2fe652d0ee3475f81073315157a.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d2/eb5656bba0c0a393e2cf6827c939b59736a3c2fe652d0ee3475f81073315157a.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d2/2b5b0fe962cb044cfc842c58fad4ac61c512dbbcd9b749ff1ac8b3bbcef598a3.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d2/2b5b0fe962cb044cfc842c58fad4ac61c512dbbcd9b749ff1ac8b3bbcef598a3.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d2/containerd-fedora.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d2/containerd-fedora.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d2/containerd-redis.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d2/containerd-redis.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+- path: /data/disks/d3.raw
+  mount_point: /mnt/d3
+  mnt_base: /tmp/mnt/d3
+  export_base: /tmp/export/d3
+  containers:
+  - id: a45adbf61bd7be39af74421815c55c2ca5d1098ef9aa00037d87b2e2ddfecdea
+    checks:
+      Namespace: ''
+  - id: fa7698249c5eb54079151fd82d89f8162d23d86e32941c057d44c0dd5e725244
+    checks:
+      Namespace: ''
+  - id: 2fca9104ccd91c502f571c14ce76e77bd1896c161c239dc75bd190f030a37b1b
+    checks:
+      Namespace: ''
+  - id: caf27b90e301a1eb23e68cd1f36fb54a53c139f13a561834ffe1697093b0a2d9
+    checks:
+      Namespace: ''
+  - id: ctr-root-nginx
+    checks:
+      Namespace: default
+  - id: ctr-root-ubuntu
+    checks:
+      Namespace: default
+  drifts:
+  - container_id: a45adbf61bd7be39af74421815c55c2ca5d1098ef9aa00037d87b2e2ddfecdea
+    added_or_modified_count: 1
+    inaccessible_count: 1
+    added_or_modified:
+    - /usr/bin/malware
+    inaccessible:
+    - /var/log/btmp
+  - container_id: fa7698249c5eb54079151fd82d89f8162d23d86e32941c057d44c0dd5e725244
+    added_or_modified_count: 1
+    inaccessible_count: 0
+    added_or_modified:
+    - /usr/bin/malware
+  - container_id: 2fca9104ccd91c502f571c14ce76e77bd1896c161c239dc75bd190f030a37b1b
+    added_or_modified_count: 3
+    inaccessible_count: 1
+    added_or_modified:
+    - /etc/mtab
+    - /run/.containerenv
+    - /usr/bin/malware
+    inaccessible:
+    - /var/log/dpkg.log
+  - container_id: caf27b90e301a1eb23e68cd1f36fb54a53c139f13a561834ffe1697093b0a2d9
+    added_or_modified_count: 3
+    inaccessible_count: 1
+    added_or_modified:
+    - /etc/mtab
+    - /run/.containerenv
+    - /usr/sbin/malware
+    inaccessible:
+    - /var/log/btmp
+  - container_id: ctr-root-nginx
+    added_or_modified_count: 2
+    inaccessible_count: 0
+    added_or_modified:
+    - /etc/nginx/conf.d/default.conf
+    - /root/.bash_history
+  - container_id: ctr-root-ubuntu
+    added_or_modified_count: 1
+    inaccessible_count: 0
+    added_or_modified:
+    - /root/.bash_history
+  mounts:
+  - path: /tmp/mnt/d3/a45adbf61bd7be39af74421815c55c2ca5d1098ef9aa00037d87b2e2ddfecdea
+  - path: /tmp/mnt/d3/fa7698249c5eb54079151fd82d89f8162d23d86e32941c057d44c0dd5e725244
+  - path: /tmp/mnt/d3/2fca9104ccd91c502f571c14ce76e77bd1896c161c239dc75bd190f030a37b1b
+  - path: /tmp/mnt/d3/caf27b90e301a1eb23e68cd1f36fb54a53c139f13a561834ffe1697093b0a2d9
+  - path: /tmp/mnt/d3/ctr-root-nginx
+  - path: /tmp/mnt/d3/ctr-root-ubuntu
+  exports:
+  - path: /tmp/export/d3/a45adbf61bd7be39af74421815c55c2ca5d1098ef9aa00037d87b2e2ddfecdea.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d3/a45adbf61bd7be39af74421815c55c2ca5d1098ef9aa00037d87b2e2ddfecdea.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d3/fa7698249c5eb54079151fd82d89f8162d23d86e32941c057d44c0dd5e725244.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d3/fa7698249c5eb54079151fd82d89f8162d23d86e32941c057d44c0dd5e725244.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d3/2fca9104ccd91c502f571c14ce76e77bd1896c161c239dc75bd190f030a37b1b.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d3/2fca9104ccd91c502f571c14ce76e77bd1896c161c239dc75bd190f030a37b1b.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d3/caf27b90e301a1eb23e68cd1f36fb54a53c139f13a561834ffe1697093b0a2d9.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d3/caf27b90e301a1eb23e68cd1f36fb54a53c139f13a561834ffe1697093b0a2d9.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d3/ctr-root-nginx.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d3/ctr-root-nginx.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d3/ctr-root-ubuntu.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d3/ctr-root-ubuntu.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+- path: /data/disks/d4.raw
+  mount_point: /mnt/d4
+  mnt_base: /tmp/mnt/d4
+  export_base: /tmp/export/d4
+  containers:
+  - id: b7e4e9a5d2f544896925d8f8647bff2414d989d01e1f8ba14a8a5099a859683a
+    checks:
+      Namespace: ''
+  - id: 53e17ccab4b4c3f6ec8b24b7bd9718abca4889e39e12647045e500c38bbcd296
+    checks:
+      Namespace: ''
+  - id: alpine-ctr
+    checks:
+      Namespace: default
+  - id: alpine-ctr-v1
+    checks:
+      Namespace: default
+  - id: bash
+    checks:
+      Namespace: default
+  drifts:
+  - container_id: b7e4e9a5d2f544896925d8f8647bff2414d989d01e1f8ba14a8a5099a859683a
+    added_or_modified_count: 4
+    inaccessible_count: 0
+    added_or_modified:
+    - /etc/hostname
+    - /etc/hosts
+    - /etc/resolv.conf
+    - /root/malware
+  - container_id: 53e17ccab4b4c3f6ec8b24b7bd9718abca4889e39e12647045e500c38bbcd296
+    added_or_modified_count: 3
+    inaccessible_count: 0
+    added_or_modified:
+    - /etc/resolv.conf
+    - /run/.containerenv
+    - /usr/local/bin/malware
+  - container_id: alpine-ctr
+    added_or_modified_count: 0
+    inaccessible_count: 0
+  - container_id: alpine-ctr-v1
+    added_or_modified_count: 1
+    inaccessible_count: 0
+    added_or_modified:
+    - /bin/malware
+  - container_id: bash
+    added_or_modified_count: 0
+    inaccessible_count: 0
+  mounts:
+  - path: /tmp/mnt/d4/b7e4e9a5d2f544896925d8f8647bff2414d989d01e1f8ba14a8a5099a859683a
+  - path: /tmp/mnt/d4/53e17ccab4b4c3f6ec8b24b7bd9718abca4889e39e12647045e500c38bbcd296
+  - path: /tmp/mnt/d4/alpine-ctr
+  - path: /tmp/mnt/d4/alpine-ctr-v1
+  - path: /tmp/mnt/d4/bash
+  exports:
+  - path: /tmp/export/d4/b7e4e9a5d2f544896925d8f8647bff2414d989d01e1f8ba14a8a5099a859683a.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d4/b7e4e9a5d2f544896925d8f8647bff2414d989d01e1f8ba14a8a5099a859683a.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d4/53e17ccab4b4c3f6ec8b24b7bd9718abca4889e39e12647045e500c38bbcd296.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d4/53e17ccab4b4c3f6ec8b24b7bd9718abca4889e39e12647045e500c38bbcd296.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d4/alpine-ctr.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d4/alpine-ctr.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d4/alpine-ctr-v1.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d4/alpine-ctr-v1.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
+  - path: /tmp/export/d4/bash.raw
+    type: image
+    size_min: 100000
+    size_max: 10737418240
+  - path: /tmp/export/d4/bash.tar.gz
+    type: archive
+    size_min: 1000
+    size_max: 5368709120
