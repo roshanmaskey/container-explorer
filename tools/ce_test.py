@@ -8,6 +8,8 @@ Mounts disk images defined in the YAML config, runs container-explorer
 commands against each, and validates results against per-disk expectations.
 """
 
+from __future__ import annotations
+
 import argparse
 import json
 import logging
@@ -15,6 +17,7 @@ import os
 import subprocess
 import sys
 import tempfile
+from typing import Any
 
 import yaml
 
@@ -22,11 +25,17 @@ import yaml
 log = logging.getLogger("ce_test")
 
 GO_CMD = "go run cmd/main.go"
-# Project root is one level up from tools/
-GO_RUN_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+# Project root is one level up from tools/; override with CE_GO_RUN_DIR
+# to test a different container-explorer checkout.
+GO_RUN_DIR = os.environ.get("CE_GO_RUN_DIR") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def run(cmd, check=True, timeout=180, cwd=None):
+def run(
+    cmd: list[str],
+    check: bool = True,
+    timeout: int = 180,
+    cwd: str | None = None,
+) -> subprocess.CompletedProcess[str]:
     log.info("  Running: %s", ' '.join(cmd))
     result = subprocess.run(
         cmd,
@@ -42,17 +51,21 @@ def run(cmd, check=True, timeout=180, cwd=None):
     return result
 
 
-def is_mounted(path):
+def is_mounted(path: str) -> bool:
     result = run(["findmnt", "-n", path], check=False)
     return result.returncode == 0
 
 
-def mount_disk(disk, mountpoint):
+def mount_disk(disk: str, mountpoint: str) -> None:
     os.makedirs(mountpoint, exist_ok=True)
     run(["mount", "-o", "loop,ro", disk, mountpoint])
 
 
-def ce_command(mount_point, subcommand, output_file=None):
+def ce_command(
+    mount_point: str,
+    subcommand: list[str],
+    output_file: str | None = None,
+) -> list[str]:
     cmd = GO_CMD.split() + [
         "-i", mount_point,
     ]
@@ -65,7 +78,12 @@ def ce_command(mount_point, subcommand, output_file=None):
     return cmd
 
 
-def run_ce(mount_point, subcommand, output_dir=None, output_name=None):
+def run_ce(
+    mount_point: str,
+    subcommand: list[str],
+    output_dir: str | None = None,
+    output_name: str | None = None,
+) -> Any:
     outfile = os.path.join(output_dir, output_name) if output_name and output_dir else None
     cmd = ce_command(mount_point, subcommand, output_file=outfile)
     run(cmd)
@@ -75,40 +93,84 @@ def run_ce(mount_point, subcommand, output_dir=None, output_name=None):
     return None
 
 
-def load_yaml(path):
+def load_yaml(path: str) -> dict[str, Any]:
     with open(path) as f:
         return yaml.safe_load(f)
 
 
-def verify_disk(disk_cfg, output_dir):
+def verify_disk(
+    disk_cfg: dict[str, Any],
+    output_dir: str,
+    with_mounts: bool = False,
+    with_exports: bool = False,
+) -> None:
     mp = disk_cfg["mount_point"]
+
+    def check(module: str, fn: Any) -> None:
+        try:
+            fn()
+            log.info("  [PASS] %s", module)
+        except Exception as e:
+            log.error("  [FAIL] %s - %s", module, e)
+            raise
 
     if "containers" in disk_cfg:
         log.info("  >> list containers")
-        data = run_ce(mp, ["list", "containers"], output_dir, "containers.json")
-        _verify_list_containers(data, disk_cfg["containers"])
+
+        def _check_containers() -> None:
+            data = run_ce(mp, ["list", "containers"], output_dir, "containers.json")
+            _verify_list_containers(data, disk_cfg["containers"])
+
+        check("list containers", _check_containers)
 
     if "drifts" in disk_cfg:
         log.info("  >> drift")
-        data = run_ce(mp, ["drift"], output_dir, "drift.json")
-        _verify_drift(data, disk_cfg["drifts"])
+
+        def _check_drift() -> None:
+            data = run_ce(mp, ["drift"], output_dir, "drift.json")
+            _verify_drift(data, disk_cfg["drifts"])
+
+        check("drift", _check_drift)
 
     mnt_base = disk_cfg.get("mnt_base", "/tmp/mnt")
-    if "mounts" in disk_cfg:
+    run_mounts = (
+        "mounts" in disk_cfg
+        and (not disk_cfg.get("skip_mounts", False) or with_mounts)
+    )
+    if run_mounts:
         log.info("  >> mount --all %s", mnt_base)
-        run_ce(mp, ["mount", "--all", mnt_base])
-        _verify_mounts(disk_cfg["mounts"])
+
+        def _check_mounts() -> None:
+            run_ce(mp, ["mount", "--all", mnt_base])
+            _verify_mounts(disk_cfg["mounts"])
+
+        check("mount", _check_mounts)
+    elif "mounts" in disk_cfg:
+        log.info("  [SKIP] mount (skip_mounts: true)")
 
     export_base = disk_cfg.get("export_base", "/tmp/export")
-    if "exports" in disk_cfg:
+    run_exports = (
+        "exports" in disk_cfg
+        and (not disk_cfg.get("skip_exports", False) or with_exports)
+    )
+    if run_exports:
         log.info("  >> export --all --image %s", export_base)
-        run_ce(mp, ["export", "--all", "--image", export_base])
         log.info("  >> export --all --archive %s", export_base)
-        run_ce(mp, ["export", "--all", "--archive", export_base])
-        _verify_exports(disk_cfg["exports"])
+
+        def _check_exports() -> None:
+            run_ce(mp, ["export", "--all", "--image", export_base])
+            run_ce(mp, ["export", "--all", "--archive", export_base])
+            _verify_exports(disk_cfg["exports"])
+
+        check("export", _check_exports)
+    elif "exports" in disk_cfg:
+        log.info("  [SKIP] export (skip_exports: true)")
 
 
-def _verify_list_containers(data, expected):
+def _verify_list_containers(
+    data: Any,
+    expected: list[dict[str, Any]],
+) -> None:
     log.info("    Verifying list containers...")
     containers = {c["ID"]: c for c in data}
     for exp in expected:
@@ -123,7 +185,10 @@ def _verify_list_containers(data, expected):
     log.info("    OK")
 
 
-def _verify_drift(data, expected):
+def _verify_drift(
+    data: Any,
+    expected: list[dict[str, Any]],
+) -> None:
     log.info("    Verifying drift...")
     by_id = {d["ContainerID"]: d for d in data}
     for exp in expected:
@@ -159,7 +224,7 @@ def _verify_drift(data, expected):
     log.info("    OK")
 
 
-def _verify_mounts(expected):
+def _verify_mounts(expected: list[dict[str, Any]]) -> None:
     log.info("    Verifying mounts...")
     for exp in expected:
         path = exp.get("path")
@@ -173,7 +238,7 @@ def _verify_mounts(expected):
     log.info("    OK")
 
 
-def _verify_exports(expected):
+def _verify_exports(expected: list[dict[str, Any]]) -> None:
     log.info("    Verifying exports...")
     for exp in expected:
         path = exp.get("path")
@@ -198,11 +263,11 @@ def _verify_exports(expected):
     log.info("    OK")
 
 
-def cleanup_mount(mount_point):
+def cleanup_mount(mount_point: str) -> None:
     run(["umount", "-l", mount_point], check=False)
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="Container Explorer integration test (multi-disk)"
     )
@@ -214,6 +279,8 @@ def main():
     parser.add_argument("--debug", action="store_true", help="Enable debug output")
     parser.add_argument("--force", action="store_true", help="Force remount if disk already mounted")
     parser.add_argument("--log", default="ce_test.log", help="Path to the log file (default: ce_test.log)")
+    parser.add_argument("--with-mounts", action="store_true", help="Run mount verification even if config sets skip_mounts")
+    parser.add_argument("--with-exports", action="store_true", help="Run export verification even if config sets skip_exports")
     args = parser.parse_args()
 
     logging.basicConfig(
@@ -240,13 +307,13 @@ def main():
     if args.debug:
         GO_CMD += " --debug"
 
-    output_dirs = []
-    mounted = []
+    output_dirs: list[str] = []
+    mounted: list[str] = []
 
     try:
         for idx, disk_cfg in enumerate(disks):
             disk_path = disk_cfg["path"]
-            mount_point = disk_cfg.get("mount_point", f"/mnt/d{idx+1}")
+            mount_point = disk_cfg.get("mount_point", "/mnt")
             label = f"[{os.path.basename(disk_path)} @ {mount_point}]"
             log.info("")
             log.info("=" * 60)
@@ -256,7 +323,7 @@ def main():
             odir = tempfile.mkdtemp(prefix=f"ce_d{idx+1}_")
             output_dirs.append(odir)
 
-            mnt_base = disk_cfg.get("mnt_base", f"/tmp/mnt/d{idx+1}")
+            mnt_base = disk_cfg.get("mnt_base", "/tmp/mnt")
             export_base = disk_cfg.get("export_base", f"/tmp/export/d{idx+1}")
             os.makedirs(mnt_base, exist_ok=True)
             os.makedirs(export_base, exist_ok=True)
@@ -274,7 +341,12 @@ def main():
                 mount_disk(disk_path, mount_point)
             mounted.append(mount_point)
 
-            verify_disk(disk_cfg, odir)
+            verify_disk(disk_cfg, odir, args.with_mounts, args.with_exports)
+
+            log.info("  [PASS] Disk %d: %s", idx + 1, label)
+            log.info("  Unmounting %s", mount_point)
+            cleanup_mount(mount_point)
+            mounted.remove(mount_point)
 
         log.info("")
         log.info("=" * 60)
@@ -283,6 +355,7 @@ def main():
 
     except Exception as e:
         log.error("\nFAILED: %s", e)
+        log.error("  [FAIL] Disk %d", idx + 1)
         sys.exit(1)
     finally:
         if not args.keep:
